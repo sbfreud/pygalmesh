@@ -10,6 +10,7 @@ py3.extension_module(
   'generate.cpp',
   'generate_2d.cpp',
   'generate_from_inr.cpp',
+  'generate_from_inr_with_features.cpp',
   'generate_from_off.cpp',
   'generate_periodic.cpp',
   'generate_surface_mesh.cpp',

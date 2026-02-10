@@ -12,6 +12,7 @@ from _pygalmesh import (
     _generate_2d,
     _generate_from_inr,
     _generate_from_inr_with_subdomain_sizing,
+    _generate_from_inr_with_features,
     _generate_from_off,
     _generate_mesh,
     _generate_periodic_mesh,
@@ -361,6 +362,47 @@ def generate_from_inr(
     os.remove(outfile)
     return mesh
 
+def generate_from_inr_with_features(
+    inr_filename: str,
+    lloyd: bool = False,
+    odt: bool = False,
+    perturb: bool = True,
+    exude: bool = True,
+    max_edge_size_at_feature_edges: float = 0.0,
+    min_facet_angle: float = 0.0,
+    max_radius_surface_delaunay_ball: float = 0.0,
+    max_facet_distance: float = 0.0,
+    max_circumradius_edge_ratio: float = 0.0,
+    max_cell_circumradius: float = 0.0,
+    exude_time_limit: float = 0.0,
+    exude_sliver_bound: float = 0.0,
+    verbose: bool = True,
+):
+    fh, outfile = tempfile.mkstemp(suffix=".mesh")
+    os.close(fh)
+
+    _generate_from_inr_with_features(
+        inr_filename,
+        outfile,
+        lloyd=lloyd,
+        odt=odt,
+        perturb=perturb,
+        exude=exude,
+        max_edge_size_at_feature_edges=max_edge_size_at_feature_edges,
+        min_facet_angle=min_facet_angle,
+        max_radius_surface_delaunay_ball=max_radius_surface_delaunay_ball,
+        max_facet_distance=max_facet_distance,
+        max_circumradius_edge_ratio=max_circumradius_edge_ratio,
+        max_cell_circumradius=max_cell_circumradius,
+        exude_time_limit=exude_time_limit,
+        exude_sliver_bound=exude_sliver_bound,
+        verbose=verbose,
+    )
+
+
+    mesh = meshio.read(outfile)
+    os.remove(outfile)
+    return mesh
 
 def remesh_surface(
     filename: str,
@@ -473,6 +515,77 @@ def generate_from_array(
         max_cell_circumradius,
         verbose,
         seed,
+    )
+    os.remove(inr_filename)
+    return mesh
+
+def generate_from_array_with_features(  
+    vol,
+    voxel_size: tuple[float, float, float],
+    lloyd: bool = False,
+    odt: bool = False,
+    perturb: bool = True,
+    exude: bool = True,
+    max_edge_size_at_feature_edges: float = 0.0,
+    min_facet_angle: float = 0.0,
+    max_radius_surface_delaunay_ball: float = 0.0,
+    max_cell_circumradius: float = 0.0,
+    max_facet_distance: float = 0.0,
+    max_circumradius_edge_ratio: float = 0.0,
+    verbose: bool = True,
+    seed: int = 0,
+):
+    """
+    Wrapper around https://doc.cgal.org/latest/Mesh_3/Mesh_3_2mesh_polyhedral_domain_with_features_8cpp-example.html
+    Function to mesh a multi-domain numpy array into a locally-refined mesh. 
+    
+    Parameters
+    -----------------
+
+    :param vol: Input 3D volume to be meshed
+    :type  vol: ndarray 3D array containing data of type uint8 or uint16
+    :param voxel_size: Voxel sizes in directions x, y, and z
+    :type voxel_size: tuple[float, float, float]
+    :param lloyd: Activate lloyd optimisation
+    :type lloyd: bool, default = False
+    :param odt: Activate odt optimisation
+    :type odt: bool, default = False
+    :param perturb: Activate sliver perturbation
+    :type perturb: bool, default = True
+    :param exude: Activate sliver exudation
+    :type exude: bool, default = True
+    :param max_edge_size_at_feature_edges: Set the polygon edge size at feature edges
+    :type max_edge_size_at_feature_edges: float
+    :param min_facet_angle: Set the minimum polygon vertex angle
+    :type min_facet_angle: float
+    :param max_radius_surface_delaunay_ball: Upper bound on the radii of surface Delaunay balls. A surface Delaunay ball is a ball circumscribing a mesh facet and centered on the surface.
+    :type max_radius_surface_delaunay_ball: float
+    :param max_cell_circumradius:  It provides an upper bound on the circumradii of the mesh tetrahedra. Note: For a spatially variable scalar field, you will need to modify the wrapper code
+    :type max_cell_circumradius: float
+    :param max_facet_distance: It provides an upper bound for the distance between the circumcenter of a surface facet and the center of a surface Delaunay ball of this facet. Note: For a spatially variable scalar field, you will need to modify the wrapper code
+    :type max_facet_distance: float
+    :param max_circumradius_edge_ratio:  It is an upper bound for the ratio between the circumradius of a mesh tetrahedron and its shortest edge. There is a theoretical bound for this parameter: the Delaunay refinement process is guaranteed to terminate for values of cell_radius_edge_ratio bigger than 2.
+    :type max_circumradius_edge_ratio: float
+    :param verbose: Print all the outputs of the underlying c++ call
+    :type verbose: bool, default = True
+    """
+    assert vol.dtype in ["uint8", "uint16"]
+    fh, inr_filename = tempfile.mkstemp(suffix=".inr")
+    os.close(fh)
+    save_inr(vol, voxel_size, inr_filename)
+    mesh = generate_from_inr_with_features(
+        inr_filename,
+        lloyd,
+        odt,
+        perturb,
+        exude,
+        max_edge_size_at_feature_edges,
+        min_facet_angle,
+        max_radius_surface_delaunay_ball,
+        max_facet_distance,
+        max_circumradius_edge_ratio,
+        max_cell_circumradius,
+        verbose,
     )
     os.remove(inr_filename)
     return mesh

@@ -1,20 +1,14 @@
 <p align="center">
   <a href="https://github.com/nschloe/pygalmesh"><img alt="pygalmesh" src="https://meshpro.github.io/pygalmesh/pygalmesh-logo.svg" width="60%"></a>
-  <p align="center">Create high-quality meshes with ease.</p>
+  <p align="center">Create high-quality meshes with ease. (Note: This is a pygalmesh fork)</p>
 </p>
-
+<!-- 
 [![PyPi Version](https://img.shields.io/pypi/v/pygalmesh.svg?style=flat-square)](https://pypi.org/project/pygalmesh)
-[![Anaconda Cloud](https://anaconda.org/conda-forge/pygalmesh/badges/version.svg?=style=flat-square)](https://anaconda.org/conda-forge/pygalmesh/)
+[![Anaconda Cloud](https://anaconda.org/conda-forge/pygalmesh/badges/version.svg?=style=flat-square)](https://anaconda.org/conda-forge/pygalmesh/) -->
 [![Packaging status](https://repology.org/badge/tiny-repos/pygalmesh.svg)](https://repology.org/project/pygalmesh/versions)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pygalmesh.svg?style=flat-square)](https://pypi.org/pypi/pygalmesh/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5564818.svg?style=flat-square)](https://doi.org/10.5281/zenodo.5564818)
-[![GitHub stars](https://img.shields.io/github/stars/nschloe/pygalmesh.svg?style=flat-square&label=Stars&logo=github)](https://github.com/nschloe/pygalmesh)
-[![Downloads](https://pepy.tech/badge/pygalmesh/month?style=flat-square)](https://pepy.tech/project/pygalmesh)
-<!--[![PyPi downloads](https://img.shields.io/pypi/dm/pygalmesh.svg?style=flat-square)](https://pypistats.org/packages/pygalmesh)-->
 
-[![Discord](https://img.shields.io/static/v1?logo=discord&label=chat&message=on%20discord&color=7289da&style=flat-square)](https://discord.gg/Z6DMsJh4Hr)
-
-[![gh-actions](https://img.shields.io/github/workflow/status/nschloe/pygalmesh/ci?style=flat-square)](https://github.com/nschloe/pygalmesh/actions?query=workflow%3Aci)
 [![codecov](https://img.shields.io/codecov/c/github/nschloe/pygalmesh.svg?style=flat-square)](https://codecov.io/gh/nschloe/pygalmesh)
 [![LGTM](https://img.shields.io/lgtm/grade/python/github/nschloe/pygalmesh.svg?style=flat-square)](https://lgtm.com/projects/g/nschloe/pygalmesh)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
@@ -23,6 +17,8 @@ pygalmesh is a Python frontend to [CGAL](https://www.cgal.org/)'s
 [2D](https://doc.cgal.org/latest/Mesh_2/index.html) and [3D mesh generation
 capabilities](https://doc.cgal.org/latest/Mesh_3/index.html). pygalmesh makes it easy
 to create high-quality 2D, 3D volume meshes, periodic volume meshes, and surface meshes.
+Modification of pygalmesh to perform feature detection and refinement relative to mesh features. Not affiliated with meshpro or the original pygalmesh project.
+To implement: [Tetrahedral mesh refinement] (https://doc.cgal.org/latest/Tetrahedral_remeshing/index.html)
 
 ### Examples
 

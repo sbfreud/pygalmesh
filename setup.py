@@ -14,6 +14,7 @@ ext_modules = [
                 "src/generate.cpp",
                 "src/generate_2d.cpp",
                 "src/generate_from_inr.cpp",
+                "src/generate_from_inr_with_features.cpp",
                 "src/generate_from_off.cpp",
                 "src/generate_periodic.cpp",
                 "src/generate_surface_mesh.cpp",
@@ -26,8 +27,10 @@ ext_modules = [
             # macos/brew:
             "/usr/local/include/eigen3",
         ],
-        # no CGAL libraries necessary from CGAL 5.0 onwards
-        libraries=["gmp", "mpfr"],
+        # TBB library required to activate concurrency
+        # libraries=["gmp", "mpfr"], #Use this if you cannot setup TBB and/or cannot setup TBB
+        libraries=["gmp", "mpfr", "tbb","tbbmalloc"],
+        extra_compile_args= ['-O3',"-DCGAL_LINKED_WITH_TBB","-DCGAL_CONCURRENT_MESH_3"],
     )
 ]
 

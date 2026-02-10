@@ -19,7 +19,7 @@
 #include <CGAL/version_macros.h>
 
 #if CGAL_VERSION_MAJOR >= 5 && CGAL_VERSION_MINOR < 3
-  #include <CGAL/IO/OFF_reader.h>
+  #include <CGAL/boost/graph/IO/OFF.h>
 #endif
 
 // for sharp features
@@ -81,7 +81,7 @@ void generate_from_off(
 #if CGAL_VERSION_MAJOR >= 5 && CGAL_VERSION_MINOR >= 3
       !CGAL::IO::read_OFF(input, points, polygons) ||
 #else
-      !CGAL::read_OFF(input, points, polygons) ||
+      !CGAL::IO::read_OFF(input, points, polygons) ||
 #endif
       points.empty()
     )

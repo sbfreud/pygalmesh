@@ -31,6 +31,12 @@ def cli(argv=None):
     _cli_inr(parser_inr)
     parser_inr.set_defaults(func=inr)
 
+    parser_features = subparsers.add_parser(
+        "with-features", help="Create volume mesh with feature refining from INR voxel files"
+    )
+    _cli_inr(parser_features)
+    parser_features.set_defaults(func=features)
+
     parser_remesh = subparsers.add_parser("remesh-surface", help="Remesh surface mesh")
     _cli_remesh(parser_remesh)
     parser_remesh.set_defaults(func=remesh_surface)
@@ -72,6 +78,22 @@ def inr(args):
     )
     meshio.write(args.outfile, mesh)
 
+def features(args):
+    mesh = generate_from_inr_with_features(
+        args.infile,
+        lloyd=args.lloyd,
+        odt=args.odt,
+        perturb=args.perturb,
+        exude=args.exude,
+        max_edge_size_at_feature_edges=args.max_edge_size_at_feature_edges,
+        min_facet_angle=args.min_facet_angle,
+        max_radius_surface_delaunay_ball=args.max_radius_surface_delaunay_ball,
+        max_facet_distance=args.max_facet_distance,
+        max_circumradius_edge_ratio=args.max_circumradius_edge_ratio,
+        max_cell_circumradius=args.max_cell_circumradius,
+        verbose=not args.quiet,
+    )
+    meshio.write(args.outfile, mesh)
 
 def _cli_inr(parser):
     parser.add_argument("infile", type=str, help="input INR file")

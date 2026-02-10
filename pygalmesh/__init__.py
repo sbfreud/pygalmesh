@@ -27,6 +27,7 @@ from .main import (
     generate_2d,
     generate_from_array,
     generate_from_inr,
+    generate_from_inr_with_features,
     generate_mesh,
     generate_periodic_mesh,
     generate_surface_mesh,
@@ -68,6 +69,7 @@ __all__ = [
     "generate_volume_mesh_from_surface_mesh",
     "generate_from_array",
     "generate_from_inr",
+    "generate_from_inr_with_features",
     "remesh_surface",
     "save_inr",
 ]
