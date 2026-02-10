@@ -26,6 +26,7 @@ from .__about__ import __cgal_version__, __version__
 from .main import (
     generate_2d,
     generate_from_array,
+    generate_from_array_with_features,
     generate_from_inr,
     generate_from_inr_with_features,
     generate_mesh,
@@ -68,6 +69,7 @@ __all__ = [
     "generate_surface_mesh",
     "generate_volume_mesh_from_surface_mesh",
     "generate_from_array",
+    "generate_from_array_with_features",
     "generate_from_inr",
     "generate_from_inr_with_features",
     "remesh_surface",
