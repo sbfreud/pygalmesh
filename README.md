@@ -18,7 +18,7 @@ pygalmesh is a Python frontend to [CGAL](https://www.cgal.org/)'s
 capabilities](https://doc.cgal.org/latest/Mesh_3/index.html). pygalmesh makes it easy
 to create high-quality 2D, 3D volume meshes, periodic volume meshes, and surface meshes.
 Modification of pygalmesh to perform feature detection and refinement relative to mesh features. Not affiliated with meshpro or the original pygalmesh project.
-To implement: [Tetrahedral mesh refinement] (https://doc.cgal.org/latest/Tetrahedral_remeshing/index.html)
+To implement: [Tetrahedral mesh refinement](https://doc.cgal.org/latest/Tetrahedral_remeshing/index.html)
 
 ### Examples
 
