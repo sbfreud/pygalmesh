@@ -93,7 +93,11 @@ generate_from_inr_with_features(
       criteria,
       lloyd ? CGAL::parameters::lloyd() : CGAL::parameters::no_lloyd(),
       odt ? CGAL::parameters::odt() : CGAL::parameters::no_odt(),
-      perturb ? CGAL::parameters::perturb() : CGAL::parameters::no_perturb(),
+      perturb ? CGAL::parameters::perturb(
+          CGAL::parameters::time_limit = exude_time_limit,
+          CGAL::parameters::sliver_bound = exude_sliver_bound
+        ) : 
+        CGAL::parameters::no_perturb(),
       exude ?
         CGAL::parameters::exude(
           CGAL::parameters::time_limit = exude_time_limit,

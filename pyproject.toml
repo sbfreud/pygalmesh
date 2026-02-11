@@ -75,11 +75,11 @@ keywords = [
     "mesh generation",
     "optimization",
 ]
-#[build-system]
-#requires = [
-#    "setuptools",
-#    "pybind11",
-#]
+[build-system]
+requires = [
+    "setuptools",
+    "pybind11",
+]
 
 [tool.pybind11]
 setup_helpers = true

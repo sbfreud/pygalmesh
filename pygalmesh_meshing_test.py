@@ -8,9 +8,15 @@ Run inside WSL in your pygalmesh virtualenv (or in linux ir ur a nerd), for exam
     source ~/cgalenv/bin/activate
     python tiff_to_cgal_bdf.py \
         --tiff path/to/volume.tif \
-        --dx 0.4 --dy 0.4 --dz 0.4 \
-        --max-facet-distance 0.4 \
-        --max-cell-circumradius 2.0 \
+        --dx 1 --dy 1 --dz 1 \
+        --max-facet-distance 1 \
+        --max-cell-circumradius 2 \
+        --max-circumradius-edge-ratio 2 \
+        --min-facet-angle 30 \
+        --max-edge-size-at-feature-edges 0.25 \
+        --max-radius-surface-delaunay-ball 0.5 \
+        --exude-time 1000 \
+        --exude-sliver-bound 10 \
         --out-prefix binary_multiphase
 
 Notes
@@ -160,24 +166,76 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tiff", help="Path to segmented 3D TIFF (integer labels)", default="volume.tif")
     p.add_argument("--cropfactor", help="Crop factor of 3D TIFF image", default=int(10))
     # p.add_argument("--phases", help="Comma separated list of integer labels (eg. 100,155,255)", default="100,177,255")
-    p.add_argument("--dx", type=float, help="Voxel size in X", default=1)
-    p.add_argument("--dy", type=float, help="Voxel size in Y", default=1)
-    p.add_argument("--dz", type=float, help="Voxel size in Z", default=1)
+    p.add_argument("--dx", type=float, help="Voxel dimension in X", default=1)
+    p.add_argument("--dy", type=float, help="Voxel dimension in Y", default=1)
+    p.add_argument("--dz", type=float, help="Voxel dimension in Z", default=1)
 
     p.add_argument(
         "--max-facet-distance",
         type=float,
-        default=None,
+        default=1,
         help="Surface approximation tolerance (CGAL Mesh_3 'max_facet_distance'). "
-             "If None, defaults to min(dx,dy,dz).",
+             "If None, defaults to 1",
     )
     p.add_argument(
         "--max-cell-circumradius",
         type=float,
-        default=4,
+        default=2,
         help="Target tetra size (CGAL Mesh_3 'max_cell_circumradius'). "
-             "If None, defaults to ~4*min(dx,dy,dz).",
+             "If None, defaults to 2 (slightly larger than facet_length)",
     )
+
+    p.add_argument(
+        "--max-circumradius-edge-ratio",
+        type=float,
+        default=2,
+        help="This parameter controls the shape of mesh cells . " \
+        "The Delaunay refinement process is guaranteed to terminate for values of max-circumradius-edge-ratio bigger than 2. " \
+        "Default 2",
+    )
+    
+
+    p.add_argument(
+        "--min-facet-angle",
+        type=float,
+        default=30,
+        help="This parameter controls the shape of surface facets. " \
+        "Actually, it is a lower bound for the angle (in degree) of surface facets." \
+        " Default 30",
+    )
+    
+    p.add_argument(
+        "--max-edge-size-at-feature-edges",
+        type=float,
+        default=0.25,
+        help="This constant or variable scalar field is used as an upper bound for the distance " \
+        "between two protecting ball centers that are consecutive on a 1-feature. " 
+             "If None, defaults to 0.25",
+    )
+
+    p.add_argument(
+        "--max-radius-surface-delaunay-ball",
+        type=float,
+        default=0.5,
+        help=" This parameter controls the size of surface facets. " 
+             "If None, defaults to 0.5",
+    )
+
+    p.add_argument(
+        "--exude-time-limit",
+        type=float,
+        default=1000,
+        help="time limit of the exude process. "
+             "If None, defaults to 1000s.",
+    )
+
+    p.add_argument(
+        "--exude-sliver-bound",
+        type=float,
+        default=10,
+        help="Targeted sliver dihedral angle in degrees. "
+             "If None, defaults to 10.",
+    )        
 
     p.add_argument(
         "--no-shift-labels",
@@ -251,6 +309,7 @@ def main():
 
     print(f"[INFO] Reading TIFF: {tiff_path}")
     vol = crop_image(tiff.imread(tiff_path), float(crop_factor), type_range)
+    # vol = tiff.imread(tiff_path)
     
 
 
@@ -281,10 +340,13 @@ def main():
     unique_labels = np.unique(vol)
     print(f"[INFO] Unique labels before shift: {unique_labels}")
     count = 1
+    
     for value in unique_labels:
+        while count in unique_labels:
+            count += 1
         vol[vol == value] = count
         count += 1
-
+    # unique_labels =(np.unique(vol))
     # Optionally shift labels so that min label is 1; 0 becomes background (non-meshed in standard pygalmesh flow)
     shift_applied = False
     if not args.no_shift_labels:
@@ -316,9 +378,16 @@ def main():
     print(f"[INFO] Using voxel_size (dx,dy,dz) = {voxel_size}")
 
     # Choose default meshing parameters if not provided
-    vmin = min(dx, dy, dz)
-    max_facet_distance = args.max_facet_distance or vmin
-    max_cell_circumradius = args.max_cell_circumradius or (2.0 * vmin)
+    # vmin = min(dx, dy, dz)
+    max_facet_distance = args.max_facet_distance
+    max_cell_circumradius = args.max_cell_circumradius
+    max_circumradius_edge_ratio = args.max_circumradius_edge_ratio
+    min_facet_angle = args.min_facet_angle
+    max_edge_size_at_feature_edges = args.max_edge_size_at_feature_edges
+    max_radius_surface_delaunay_ball = args.max_radius_surface_delaunay_ball
+    exude_time_limit = args.exude_time_limit
+    exude_sliver_bound = args.exude_sliver_bound
+
 
     print(f"[INFO] max_facet_distance      = {max_facet_distance}")
     print(f"[INFO] max_cell_circumradius   = {max_cell_circumradius}")
@@ -334,19 +403,19 @@ def main():
         exude=True,
         max_facet_distance=max_facet_distance,
         max_cell_circumradius=max_cell_circumradius,
-        max_circumradius_edge_ratio=6,
-        min_facet_angle=20,
-        max_edge_size_at_feature_edges=max_facet_distance/4,
-        max_radius_surface_delaunay_ball=max_facet_distance,
-        exude_time_limit=100,
-        exude_sliver_bound=100,
+        max_circumradius_edge_ratio=max_circumradius_edge_ratio,
+        min_facet_angle=min_facet_angle,
+        max_edge_size_at_feature_edges=max_edge_size_at_feature_edges,
+        max_radius_surface_delaunay_ball=max_radius_surface_delaunay_ball,
+        exude_time_limit=exude_time_limit,
+        exude_sliver_bound=exude_sliver_bound,
         verbose=True,
     )
-    # mesh.write('testmesh.vtk')
-    # # mesh is a meshio.Mesh-like object; ensure it's meshio.Mesh
-    # if not isinstance(mesh, meshio.Mesh):
-    #     # Older/newer versions might still be compatible; wrap if needed
-    #     mesh = meshio.Mesh(points=mesh.points, cells=mesh.cells)
+    mesh.write('testmesh.vtk')
+    # mesh is a meshio.Mesh-like object; ensure it's meshio.Mesh
+    if not isinstance(mesh, meshio.Mesh):
+        # Older/newer versions might still be compatible; wrap if needed
+        mesh = meshio.Mesh(points=mesh.points, cells=mesh.cells)
 
     print("[INFO] Meshing done.")
     print(f"       Points: {mesh.points.shape}")
