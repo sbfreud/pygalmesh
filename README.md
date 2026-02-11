@@ -2,9 +2,9 @@
   <a href="https://github.com/nschloe/pygalmesh"><img alt="pygalmesh" src="https://meshpro.github.io/pygalmesh/pygalmesh-logo.svg" width="60%"></a>
   <p align="center">Create high-quality meshes with ease. (Note: This is a pygalmesh fork)</p>
 </p>
-<!-- 
+
 [![PyPi Version](https://img.shields.io/pypi/v/pygalmesh.svg?style=flat-square)](https://pypi.org/project/pygalmesh)
-[![Anaconda Cloud](https://anaconda.org/conda-forge/pygalmesh/badges/version.svg?=style=flat-square)](https://anaconda.org/conda-forge/pygalmesh/) -->
+[![Anaconda Cloud](https://anaconda.org/conda-forge/pygalmesh/badges/version.svg?=style=flat-square)](https://anaconda.org/conda-forge/pygalmesh/)
 [![Packaging status](https://repology.org/badge/tiny-repos/pygalmesh.svg)](https://repology.org/project/pygalmesh/versions)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pygalmesh.svg?style=flat-square)](https://pypi.org/pypi/pygalmesh/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5564818.svg?style=flat-square)](https://doi.org/10.5281/zenodo.5564818)
