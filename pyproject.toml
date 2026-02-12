@@ -1,102 +1,48 @@
-[tool.isort]
-profile = "black"
-
-[build-system]
-requires = ["setuptools>=61", "pybind11>=2.6.0"]
-build-backend = "setuptools.build_meta"
-
-# [project]
-# name = "pygalmesh"
-# version = "0.10.7"
-# authors = [{name = "Nico Schlömer", email = "nico.schloemer@gmail.com"}]
-# description = "Python frontend to CGAL's mesh generation capabilities"
-# readme = "README.md"
-# license = {file = "LICENSE"}
-# classifiers = [
-#   "Development Status :: 4 - Beta",
-#   "Intended Audience :: Science/Research",
-#   "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-#   "Operating System :: OS Independent",
-#   "Programming Language :: Python :: 3",
-#   "Programming Language :: Python :: 3.7",
-#   "Programming Language :: Python :: 3.8",
-#   "Programming Language :: Python :: 3.9",
-#   "Programming Language :: Python :: 3.10",
-#   "Topic :: Scientific/Engineering",
-#   "Topic :: Utilities",
-# ]
-# keywords = [
-#   "mathematics",
-#   "physics",
-#   "engineering",
-#   "mesh",
-#   "mesh generation",
-#   "optimization",
-# ]
-# requires-python = ">=3.7"
-# dependencies = [
-#   "importlib_metadata;python_version<'3.8'",
-#   "meshio >= 5, <6",
-#   "numpy >= 1.20.0",
-# ]
-# 
-# [project.urls]
-# Home = "https://github.com/meshpro/pygalmesh"
-# Issues = "https://github.com/meshpro/pygalmesh/issues"
-# 
-# [project.scripts]
-# pygalmesh = "pygalmesh.cli:main"
-# pygalmesh-info = "pygalmesh.cli:info"
-[project]
-name = "pygalmesh_fork"
-version = "0.11.7"
-authors = [{name = "SB"}]
-description = "Python frontend to CGAL's mesh generation capabilities"
-readme = "README.md"
-license = {file = "LICENSE"}
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Topic :: Scientific/Engineering",
-    "Topic :: Utilities",
-]
-keywords = [
-    "mathematics",
-    "physics",
-    "engineering",
-    "mesh",
-    "mesh generation",
-    "optimization",
-]
 [build-system]
 requires = [
-    "setuptools",
-    "pybind11",
+  "setuptools>=64",
+  "wheel",
+  "pybind11>=2.10",
+]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "pygalmesh"
+version = "0.1.0"
+description = "Python bindings for CGAL-based meshing (_pygalmesh)"
+requires-python = ">=3.8"
+authors = [{name = "SB"}]
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pygalmesh*"]
+
+
+[tool.setuptools.ext_modules."_pygalmesh"]
+sources = [
+  "src/generate.cpp",
+  "src/generate_2d.cpp",
+  "src/generate_from_inr.cpp",
+  "src/generate_from_inr_with_features.cpp",
+  "src/generate_from_off.cpp",
+  "src/generate_periodic.cpp",
+  "src/generate_surface_mesh.cpp",
+  "src/remesh_surface.cpp",
+  "src/pybind11.cpp",
 ]
 
-[tool.pybind11]
-setup_helpers = true
-extensions = ["Pybind11Extension"]
-build_ext = true
-build-backend = "setuptools.build_meta"
-requires-python = ">=3.7"
-#dependencies = [
-#    "importlib_metadata;python_version<'3.8'",
-#    "meshio >= 5, <6",
-#    "numpy >= 1.20.0",
-#]
+include-dirs = [
+  "/usr/include/eigen3/",
+  "/usr/local/include/eigen3",
+]
 
-[project.urls]
-Home = "https://github.com/meshpro/pygalmesh"
-Issues = "https://github.com/meshpro/pygalmesh/issues"
+libraries = ["gmp", "mpfr", "tbb", "tbbmalloc"]
 
-[project.scripts]
-pygalmesh = "pygalmesh.cli:main"
-pygalmesh-info = "pygalmesh.cli:info"
+extra-compile-args = ["-O3"]
+
+define-macros = [
+  ["CGAL_LINKED_WITH_TBB", "1"],
+  ["CGAL_CONCURRENT_MESH_3", "1"],
+]
